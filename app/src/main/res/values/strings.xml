@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">MallAR</string>
+
+    <!-- Splash -->
+    <string name="start">Start</string>
+
+    <!-- Permissions -->
+    <string name="permissions_title">MallAR Needs Your Permission</string>
+    <string name="permissions_subtitle">To help you navigate the mall, MallAR needs access to the following</string>
+    <string name="enable_camera">Enable Camera</string>
+    <string name="enable_location">Enable Location</string>
+    <string name="enable_motion">Enable Motion</string>
+    <string name="continue_btn">Continue</string>
+
+    <!-- Phone Auth -->
+    <string name="enter_phone">Enter your Phone Number</string>
+    <string name="phone_subtitle">You will receive a 4 digit code</string>
+    <string name="phone_label">Phone number</string>
+    <string name="send">Send</string>
+    <string name="skip">Skip</string>
+    <string name="country_code">+20</string>
+
+    <!-- OTP -->
+    <string name="verify_code">Verify Code</string>
+    <string name="otp_subtitle">We sent a 6-digit code to your phone number.</string>
+    <string name="verify">Verify</string>
+
+    <!-- Logo Scan -->
+    <string name="scan_instruction">Point camera at a store logo to detect your location</string>
+
+    <!-- Store Search -->
+    <string name="search_hint">Where to go…</string>
+    <string name="search">Search</string>
+
+    <!-- AR Navigation -->
+    <string name="direction_left">✈ LEFT: 50m</string>
+    <string name="show_road">Show Road →</string>
+</resources>

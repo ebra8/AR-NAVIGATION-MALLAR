@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Teal background -->
+    <path
+        android:fillColor="#1A8C8C"
+        android:pathData="M0,0h108v108h-108z" />
+
+    <!-- Location pin / teardrop shape -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,18 C35,18 20,33 20,52 C20,74 54,95 54,95 C54,95 88,74 88,52 C88,33 73,18 54,18 Z" />
+
+    <!-- Shopping bag body -->
+    <path
+        android:fillColor="#1A8C8C"
+        android:pathData="M40,50 L40,75 C40,77 41.5,78.5 43.5,78.5 L64.5,78.5 C66.5,78.5 68,77 68,75 L68,50 L40,50 Z" />
+
+    <!-- Shopping bag top -->
+    <path
+        android:fillColor="#0F5F5F"
+        android:pathData="M38,47 L70,47 L70,52 L38,52 Z" />
+
+    <!-- Bag handles -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#0F5F5F"
+        android:strokeWidth="2.5"
+        android:pathData="M46,47 C46,40 46,37 51,37" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#0F5F5F"
+        android:strokeWidth="2.5"
+        android:pathData="M62,47 C62,40 62,37 57,37" />
+
+    <!-- "AR" text -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M44,72 L48,58 L52,72 L50,72 L49,68 L47,68 L46,72 Z M48,62 L47,66.5 L49,66.5 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M55,58 L55,72 L57.5,72 L57.5,66.5 L59,66.5 L61,72 L63.5,72 L61,66 C62.5,65.3 63,63.8 63,62.5 C63,60 61.5,58 59,58 Z M57.5,60.5 L59,60.5 C60,60.5 60.5,61.2 60.5,62.5 C60.5,63.8 60,64.5 59,64.5 L57.5,64.5 Z" />
+</vector>

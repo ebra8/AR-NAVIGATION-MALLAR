@@ -1,0 +1,324 @@
+[
+  {
+    "ID": 1,
+    "Brand": "American eagle",
+    "X": 174,
+    "Y": 140,
+    "Logo": "logos/american-eagle.jpg"
+  },
+  {
+    "ID": 2,
+    "Brand": "GURU",
+    "X": 125,
+    "Y": 165,
+    "Logo": "logos/guru.jpg"
+  },
+  {
+    "ID": 3,
+    "Brand": "Nail Couture",
+    "X": 84,
+    "Y": 264,
+    "Logo": "logos/nail-couture.jpg"
+  },
+  {
+    "ID": 4,
+    "Brand": "Starbucks",
+    "X": 167,
+    "Y": 260,
+    "Logo": "logos/starbucks.jpg"
+  },
+  {
+    "ID": 5,
+    "Brand": "Tams",
+    "X": 169,
+    "Y": 283,
+    "Logo": "logos/tam's.jpg"
+  },
+  {
+    "ID": 6,
+    "Brand": "Cleo",
+    "X": 170,
+    "Y": 352,
+    "Logo": "logos/cleo.jpg"
+  },
+  {
+    "ID": 7,
+    "Brand": "Najaro",
+    "X": 172,
+    "Y": 383,
+    "Logo": "logos/najaro.jpg"
+  },
+  {
+    "ID": 8,
+    "Brand": "My secret",
+    "X": 158,
+    "Y": 407,
+    "Logo": "logos/my-secret.jpg"
+  },
+  {
+    "ID": 9,
+    "Brand": "Sixt",
+    "X": 157,
+    "Y": 430,
+    "Logo": "logos/sixt.jpg"
+  },
+  {
+    "ID": 10,
+    "Brand": "Durcatta",
+    "X": 160,
+    "Y": 450,
+    "Logo": "logos/durcatta.jpg"
+  },
+  {
+    "ID": 11,
+    "Brand": "Crocs",
+    "X": 199,
+    "Y": 468,
+    "Logo": "logos/crocs.jpg"
+  },
+  {
+    "ID": 12,
+    "Brand": "SNowred behind crocs",
+    "X": 223,
+    "Y": 467,
+    "Logo": "logos/snowred-behind-crocs.jpg"
+  },
+  {
+    "ID": 13,
+    "Brand": "Pixi",
+    "X": 184,
+    "Y": 347,
+    "Logo": "logos/pixi.jpg"
+  },
+  {
+    "ID": 14,
+    "Brand": "New balance",
+    "X": 185,
+    "Y": 305,
+    "Logo": "logos/new-balance.jpg"
+  },
+  {
+    "ID": 15,
+    "Brand": "Hijab Boutique",
+    "X": 185,
+    "Y": 282,
+    "Logo": "logos/hijab-boutique.jpg"
+  },
+  {
+    "ID": 16,
+    "Brand": "Lacoste",
+    "X": 197,
+    "Y": 249,
+    "Logo": "logos/lacoste.jpg"
+  },
+  {
+    "ID": 17,
+    "Brand": "Mili",
+    "X": 260,
+    "Y": 239,
+    "Logo": "logos/mili.jpg"
+  },
+  {
+    "ID": 18,
+    "Brand": "H&m",
+    "X": 319,
+    "Y": 227,
+    "Logo": "logos/hm.jpg"
+  },
+  {
+    "ID": 19,
+    "Brand": "Jimmy key",
+    "X": 348,
+    "Y": 244,
+    "Logo": "logos/jimmy-key.jpg"
+  },
+  {
+    "ID": 20,
+    "Brand": "Coctail",
+    "X": 331,
+    "Y": 272,
+    "Logo": "logos/coctail.jpg"
+  },
+  {
+    "ID": 21,
+    "Brand": "Pistage",
+    "X": 331,
+    "Y": 294,
+    "Logo": "logos/pistage.jpg"
+  },
+  {
+    "ID": 22,
+    "Brand": "Koton",
+    "X": 329,
+    "Y": 317,
+    "Logo": "logos/koton.jpg"
+  },
+  {
+    "ID": 23,
+    "Brand": "United color of benemon",
+    "X": 312,
+    "Y": 252,
+    "Logo": "logos/united-color-of-benemon.jpg"
+  },
+  {
+    "ID": 24,
+    "Brand": "Lipsy london",
+    "X": 315,
+    "Y": 307,
+    "Logo": "logos/lipsy-london.jpg"
+  },
+  {
+    "ID": 25,
+    "Brand": "Palma",
+    "X": 312,
+    "Y": 327,
+    "Logo": "logos/palma.jpg"
+  },
+  {
+    "ID": 26,
+    "Brand": "Marie france",
+    "X": 315,
+    "Y": 354,
+    "Logo": "logos/marie-france.jpg"
+  },
+  {
+    "ID": 27,
+    "Brand": "OMB",
+    "X": 317,
+    "Y": 380,
+    "Logo": "logos/omb.jpg"
+  },
+  {
+    "ID": 28,
+    "Brand": "Aldo",
+    "X": 274,
+    "Y": 417,
+    "Logo": "logos/aldo.jpg"
+  },
+  {
+    "ID": 29,
+    "Brand": "Pepla",
+    "X": 247,
+    "Y": 439,
+    "Logo": "logos/pepla.jpg"
+  },
+  {
+    "ID": 30,
+    "Brand": "Womens secret",
+    "X": 280,
+    "Y": 425,
+    "Logo": "logos/womens-secret.jpg"
+  },
+  {
+    "ID": 31,
+    "Brand": "Carbisa",
+    "X": 337,
+    "Y": 408,
+    "Logo": "logos/carbisa.jpg"
+  },
+  {
+    "ID": 32,
+    "Brand": "La vie En Rose",
+    "X": 334,
+    "Y": 378,
+    "Logo": "logos/la-vie-en-rose.jpg"
+  },
+  {
+    "ID": 33,
+    "Brand": "Pinkberry",
+    "X": 320,
+    "Y": 430,
+    "Logo": "logos/pinkberry.jpg"
+  },
+  {
+    "ID": 34,
+    "Brand": "Femi",
+    "X": 338,
+    "Y": 430,
+    "Logo": "logos/femi.jpg"
+  },
+  {
+    "ID": 35,
+    "Brand": "Pronovies",
+    "X": 360,
+    "Y": 430,
+    "Logo": "logos/pronovies.jpg"
+  },
+  {
+    "ID": 36,
+    "Brand": "BSB",
+    "X": 412,
+    "Y": 417,
+    "Logo": "logos/bsb.jpg"
+  },
+  {
+    "ID": 37,
+    "Brand": "BCBG",
+    "X": 438,
+    "Y": 435,
+    "Logo": "logos/bcbg.jpg"
+  },
+  {
+    "ID": 38,
+    "Brand": "Left behind BCBG",
+    "X": 413,
+    "Y": 436,
+    "Logo": "logos/left-behind-bcbg.jpg"
+  },
+  {
+    "ID": 39,
+    "Brand": "Zara",
+    "X": 710,
+    "Y": 422,
+    "Logo": "logos/zara.jpg"
+  },
+  {
+    "ID": 40,
+    "Brand": "Stardivarius",
+    "X": 662,
+    "Y": 415,
+    "Logo": "logos/stardivarius.jpg"
+  },
+  {
+    "ID": 41,
+    "Brand": "Desigual",
+    "X": 663,
+    "Y": 436,
+    "Logo": "logos/desigual.jpg"
+  },
+  {
+    "ID": 42,
+    "Brand": "Forever 21",
+    "X": 620,
+    "Y": 456,
+    "Logo": "logos/forever-21.jpg"
+  },
+  {
+    "ID": 43,
+    "Brand": "Adidas",
+    "X": 559,
+    "Y": 434,
+    "Logo": "logos/adidas.jpg"
+  },
+  {
+    "ID": 44,
+    "Brand": "Pinky Lollypop",
+    "X": 514,
+    "Y": 434,
+    "Logo": "logos/pinky-lollypop.jpg"
+  },
+  {
+    "ID": 45,
+    "Brand": "Bershka",
+    "X": 740,
+    "Y": 189,
+    "Logo": "logos/bershka.jpg"
+  },
+  {
+    "ID": 46,
+    "Brand": "Gerry Weber",
+    "X": 520,
+    "Y": 416,
+    "Logo": "logos/gerry-weber.jpg"
+  }
+]

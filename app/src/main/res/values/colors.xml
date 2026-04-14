@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand Colors -->
+    <color name="teal_primary">#FF1A8C8C</color>
+    <color name="teal_dark">#FF0F5F5F</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="text_primary">#FF1A1A1A</color>
+    <color name="text_secondary">#FF666666</color>
+    <color name="camera_placeholder">#FF222222</color>
+    <color name="light_gray">#FFF0F0F0</color>
+    <color name="red_accent">#FFE53935</color>
+    <color name="green_arrow">#FF4CAF50</color>
+</resources>
