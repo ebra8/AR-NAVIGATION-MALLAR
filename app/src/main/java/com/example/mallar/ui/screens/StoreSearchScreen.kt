@@ -12,58 +12,50 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.example.mallar.data.Place
+import com.example.mallar.data.PlaceRepository
 import com.example.mallar.ui.theme.*
 import kotlinx.coroutines.delay
 
-data class StoreItem(
-    val name: String,
-    val initials: String,
-    val color: Color,
-    val distance: String,
-    val walkTime: String
-)
-
-private val sampleStores = listOf(
-    StoreItem("H&M", "HM", Color(0xFFE50010), "230m", "5min"),
-    StoreItem("HP", "HP", Color(0xFF0096D6), "180m", "4min"),
-    StoreItem("HomeCentre", "HC", Color(0xFFD4A34F), "350m", "7min"),
-    StoreItem("Hollister", "Ho", Color(0xFF1C3A5F), "290m", "6min"),
-    StoreItem("Hugo Boss", "HB", Color(0xFF1A1A1A), "410m", "8min")
-)
-
 @Composable
 fun StoreSearchScreen(
-    onStoreClick: () -> Unit,
+    onStoreClick: (Place) -> Unit,
     onBackClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val allPlaces = remember { PlaceRepository.load(context) }
     var searchQuery by remember { mutableStateOf("") }
-    val filteredStores = remember(searchQuery) {
-        sampleStores.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    val filteredPlaces = remember(searchQuery) {
+        if (searchQuery.isBlank()) allPlaces
+        else allPlaces.filter { it.brand.contains(searchQuery, ignoreCase = true) }
     }
 
     Box(modifier = Modifier.fillMaxSize().background(SurfaceLight)) {
-        // High-Fidelity Header (Glass Camera Overlay)
+        // ── Camera/Mall overlay header ───────────────────────────────────────
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp)
                 .background(CameraPlaceholder)
         ) {
-            // Animated Header Controls
+            // Header controls row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -74,59 +66,46 @@ fun StoreSearchScreen(
             ) {
                 Surface(
                     onClick = onBackClick,
-                    modifier = Modifier.size(56.dp),
+                    modifier = Modifier.size(48.dp),
                     shape = CircleShape,
                     color = White.copy(alpha = 0.9f)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Teal)
-                    }
-                }
-                
-                Surface(
-                    modifier = Modifier
-                        .height(44.dp)
-                        .padding(horizontal = 4.dp),
-                    shape = RoundedCornerShape(22.dp),
-                    color = Color.Black.copy(alpha = 0.4f)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(modifier = Modifier.size(8.dp).background(Color.Red, CircleShape))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("LIVE", color = White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Teal)
                     }
                 }
             }
         }
 
-        // Store Content Sheet
+        // ── Bottom sheet with search + list ─────────────────────────────────
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 220.dp)
-                .background(
-                    color = White,
-                    shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
-                )
+                .background(White, RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
         ) {
-            // Premium Search Bar
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp)
-            ) {
+            // Search bar
+            Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 20.dp)) {
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
-                    placeholder = { Text("Find store or brand...", color = TextSecondary.copy(alpha = 0.5f)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .shadow(12.dp, RoundedCornerShape(20.dp)),
-                    leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null, tint = Teal) },
-                    shape = RoundedCornerShape(20.dp),
+                    placeholder = {
+                        Text("Find store or brand…", color = TextSecondary.copy(alpha = 0.5f))
+                    },
+                    modifier = Modifier.fillMaxWidth().shadow(8.dp, RoundedCornerShape(18.dp)),
+                    leadingIcon = {
+                        Icon(Icons.Filled.Search, contentDescription = null, tint = Teal)
+                    },
+                    trailingIcon = if (searchQuery.isNotEmpty()) ({
+                        IconButton(onClick = { searchQuery = "" }) {
+                            Icon(
+                                Icons.Filled.Close,
+                                contentDescription = "Clear",
+                                tint = TextSecondary
+                            )
+                        }
+                    }) else null,
+                    shape = RoundedCornerShape(18.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Teal,
                         unfocusedBorderColor = Color.Transparent,
@@ -137,113 +116,122 @@ fun StoreSearchScreen(
                 )
             }
 
-            // Staggered Store List
+            // Store list
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 100.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                item {
-                    Text(
-                        "Featured Brands",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = TextSecondary,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
+                if (filteredPlaces.isEmpty()) {
+                    item {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().padding(top = 40.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("No stores found", color = TextSecondary, fontSize = 16.sp)
+                        }
+                    }
+                } else {
+                    itemsIndexed(filteredPlaces) { index, place ->
+                        StoreCard(
+                            place = place,
+                            index = index,
+                            onClick = { onStoreClick(place) }
+                        )
+                    }
                 }
-                
-                itemsIndexed(filteredStores) { index, store ->
-                    StoreCardPremium(
-                        store = store,
-                        index = index,
-                        onClick = onStoreClick
-                    )
-                }
-            }
-        }
-
-        // Animated Toggle FAB
-        FloatingActionButton(
-            onClick = { },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 32.dp)
-                .size(width = 140.dp, height = 56.dp)
-                .shadow(16.dp, RoundedCornerShape(28.dp)),
-            containerColor = Teal,
-            contentColor = White,
-            shape = RoundedCornerShape(28.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Filled.List, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("View Map", fontWeight = FontWeight.Bold)
             }
         }
     }
 }
 
 @Composable
-private fun StoreCardPremium(
-    store: StoreItem,
+private fun StoreCard(
+    place: Place,
     index: Int,
     onClick: () -> Unit
 ) {
     var isVisible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        delay(index * 100L)
+        delay(index * 60L)
         isVisible = true
     }
 
     AnimatedVisibility(
         visible = isVisible,
-        enter = fadeIn() + slideInVertically { it / 3 }
+        enter = fadeIn(tween(300)) + slideInVertically(tween(300)) { it / 4 }
     ) {
         Surface(
             onClick = onClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .shadow(2.dp, RoundedCornerShape(24.dp)),
-            shape = RoundedCornerShape(24.dp),
+                .shadow(2.dp, RoundedCornerShape(20.dp)),
+            shape = RoundedCornerShape(20.dp),
             color = White
         ) {
             Row(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Store logo from assets
                 Surface(
-                    modifier = Modifier.size(64.dp),
-                    shape = RoundedCornerShape(18.dp),
-                    color = store.color.copy(alpha = 0.1f),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, store.color.copy(alpha = 0.2f))
+                    modifier = Modifier.size(60.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    color = SurfaceLight
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data("file:///android_asset/${place.logo}")
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = place.brand,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(14.dp))
+                            .padding(6.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(14.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = place.brand,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 16.sp,
+                        color = TextPrimary
+                    )
+                    Spacer(modifier = Modifier.height(3.dp))
+                    // Deterministic distance estimate from X,Y coordinates
+                    val distM = remember(place.id) {
+                        val dx = place.x - 319f
+                        val dy = place.y - 227f
+                        (kotlin.math.sqrt(dx * dx + dy * dy) * 0.9f).toInt().coerceIn(80, 480)
+                    }
+                    val mins = remember(distM) { (distM / 60).coerceIn(2, 10) }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Filled.LocationOn,
+                            null,
+                            tint = RedAccent,
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(modifier = Modifier.width(3.dp))
                         Text(
-                            text = store.initials,
-                            color = store.color,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 20.sp
+                            text = "${distM}m",
+                            color = TextSecondary,
+                            fontSize = 12.sp
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = "• ${mins}min",
+                            color = TextSecondary,
+                            fontSize = 12.sp
                         )
                     }
                 }
-                
-                Spacer(modifier = Modifier.width(16.dp))
-                
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = store.name,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 18.sp,
-                        color = TextPrimary
-                    )
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Filled.LocationOn, null, tint = RedAccent, modifier = Modifier.size(14.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = store.distance, color = TextSecondary, fontSize = 13.sp)
-                    }
-                }
-                
+
                 Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = DividerColor)
             }
         }

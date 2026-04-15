@@ -18,7 +18,7 @@
     "Brand": "Nail Couture",
     "X": 84,
     "Y": 264,
-    "Logo": "logos/nail-couture.jpg"
+    "Logo": "logos/mii.jpg"
   },
   {
     "ID": 4,
@@ -46,7 +46,7 @@
     "Brand": "Najaro",
     "X": 172,
     "Y": 383,
-    "Logo": "logos/najaro.jpg"
+    "Logo": "logos/najjaro.jpg"
   },
   {
     "ID": 8,
@@ -67,7 +67,7 @@
     "Brand": "Durcatta",
     "X": 160,
     "Y": 450,
-    "Logo": "logos/durcatta.jpg"
+    "Logo": "logos/dubetta.jpg"
   },
   {
     "ID": 11,
@@ -81,7 +81,7 @@
     "Brand": "SNowred behind crocs",
     "X": 223,
     "Y": 467,
-    "Logo": "logos/snowred-behind-crocs.jpg"
+    "Logo": "logos/crocs.jpg"
   },
   {
     "ID": 13,
@@ -116,14 +116,14 @@
     "Brand": "Mili",
     "X": 260,
     "Y": 239,
-    "Logo": "logos/mili.jpg"
+    "Logo": "logos/mii.jpg"
   },
   {
     "ID": 18,
     "Brand": "H&m",
     "X": 319,
     "Y": 227,
-    "Logo": "logos/hm.jpg"
+    "Logo": "logos/h&m.jpg"
   },
   {
     "ID": 19,
@@ -158,14 +158,14 @@
     "Brand": "United color of benemon",
     "X": 312,
     "Y": 252,
-    "Logo": "logos/united-color-of-benemon.jpg"
+    "Logo": "logos/united-colors-of-benetton.jpg"
   },
   {
     "ID": 24,
     "Brand": "Lipsy london",
     "X": 315,
     "Y": 307,
-    "Logo": "logos/lipsy-london.jpg"
+    "Logo": "logos/lipsy.jpg"
   },
   {
     "ID": 25,
@@ -207,14 +207,14 @@
     "Brand": "Womens secret",
     "X": 280,
     "Y": 425,
-    "Logo": "logos/womens-secret.jpg"
+    "Logo": "logos/women'secret.jpg"
   },
   {
     "ID": 31,
     "Brand": "Carbisa",
     "X": 337,
     "Y": 408,
-    "Logo": "logos/carbisa.jpg"
+    "Logo": "logos/carpisa.jpg"
   },
   {
     "ID": 32,
@@ -242,7 +242,7 @@
     "Brand": "Pronovies",
     "X": 360,
     "Y": 430,
-    "Logo": "logos/pronovies.jpg"
+    "Logo": "logos/pronovias.jpg"
   },
   {
     "ID": 36,
@@ -256,14 +256,14 @@
     "Brand": "BCBG",
     "X": 438,
     "Y": 435,
-    "Logo": "logos/bcbg.jpg"
+    "Logo": "logos/bcbgmaxazria.jpg"
   },
   {
     "ID": 38,
     "Brand": "Left behind BCBG",
     "X": 413,
     "Y": 436,
-    "Logo": "logos/left-behind-bcbg.jpg"
+    "Logo": "logos/bcbgmaxazria.jpg"
   },
   {
     "ID": 39,
@@ -277,7 +277,7 @@
     "Brand": "Stardivarius",
     "X": 662,
     "Y": 415,
-    "Logo": "logos/stardivarius.jpg"
+    "Logo": "logos/stradivarius.jpg"
   },
   {
     "ID": 41,
@@ -298,7 +298,7 @@
     "Brand": "Adidas",
     "X": 559,
     "Y": 434,
-    "Logo": "logos/adidas.jpg"
+    "Logo": "logos/adidas-originals.jpg"
   },
   {
     "ID": 44,

@@ -73,6 +73,9 @@ dependencies {
     // JSON parsing
     implementation("com.google.code.gson:gson:2.11.0")
 
+    // Coil for image loading from assets
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
     implementation(libs.guava)
     implementation(libs.androidx.concurrent.futures)
 

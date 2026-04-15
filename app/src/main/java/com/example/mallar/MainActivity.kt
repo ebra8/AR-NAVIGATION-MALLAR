@@ -13,10 +13,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mallar.ui.screens.ArNavigationScreen
 import com.example.mallar.ui.screens.LogoScanScreen
+import com.example.mallar.ui.screens.NavigationState
 import com.example.mallar.ui.screens.OtpVerifyScreen
 import com.example.mallar.ui.screens.PermissionsScreen
 import com.example.mallar.ui.screens.PhoneAuthScreen
 import com.example.mallar.ui.screens.SplashScreen
+import com.example.mallar.ui.screens.StoreDetailScreen
 import com.example.mallar.ui.screens.StoreSearchScreen
 import com.example.mallar.ui.theme.MallARTheme
 
@@ -38,7 +40,7 @@ class MainActivity : ComponentActivity() {
  * Navigation graph for the entire MallAR app.
  *
  * Flow:
- *   Splash → Permissions → PhoneAuth → OtpVerify → LogoScan → StoreSearch → ArNavigation
+ *   Splash → Permissions → PhoneAuth → OtpVerify → LogoScan → StoreSearch → StoreDetail → ArNavigation
  *                                      ↘ (Skip) → LogoScan
  */
 @Composable
@@ -93,6 +95,32 @@ fun MallARNavGraph() {
                     navController.navigate("ar_navigation")
                 }
             )
+        }
+
+        composable("store_search") {
+            StoreSearchScreen(
+                onStoreClick = { place ->
+                    NavigationState.selectedPlace = place
+                    navController.navigate("store_detail")
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable("store_detail") {
+            val place = NavigationState.selectedPlace
+            if (place != null) {
+                StoreDetailScreen(
+                    place = place,
+                    onBackClick = { navController.popBackStack() },
+                    onStartNavigation = {
+                        navController.navigate("ar_navigation")
+                    }
+                )
+            } else {
+                // Fallback if no place selected — go back to search
+                navController.popBackStack()
+            }
         }
 
         composable("ar_navigation") {
