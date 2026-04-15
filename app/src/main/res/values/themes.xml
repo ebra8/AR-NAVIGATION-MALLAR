@@ -3,6 +3,6 @@
     <style name="Theme.MallAR" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">#1A8C8C</item>
         <item name="android:navigationBarColor">#1A8C8C</item>
-        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowBackground">@drawable/background</item>
     </style>
 </resources>
