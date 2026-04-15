@@ -7,6 +7,8 @@ import android.graphics.Rect
 import android.graphics.YuvImage
 import android.util.Log
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
@@ -30,10 +32,12 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -83,13 +87,43 @@ enum class ScreenFlow {
 // ── Main Screen ───────────────────────────────────────────────────────────────
 @Composable
 fun LogoScanScreen(
-    onBackClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onStoreSelected: () -> Unit   // navigate to ArNavigation
 ) {
     val context        = LocalContext.current
+    var backPressedTime by remember { mutableLongStateOf(0L) }
+
+    BackHandler {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - backPressedTime < 2000) {
+            (context as? android.app.Activity)?.finish()
+        } else {
+            backPressedTime = currentTime
+            Toast.makeText(context, "Press back again to exit", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     val lifecycleOwner = LocalLifecycleOwner.current
-    val allPlaces      = remember { PlaceRepository.load(context) }
-    val mallGraph      = remember { MallGraphRepository.load(context) }
+
+    var allPlaces by remember { mutableStateOf<List<Place>>(emptyList()) }
+    var mallGraph by remember { mutableStateOf<com.example.mallar.data.MallGraph?>(null) }
+    var logoDetector by remember { mutableStateOf<LogoDetector?>(null) }
+
+    val scanRequested  = remember { AtomicBoolean(false) }
+
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+            val loadedPlaces = PlaceRepository.load(context)
+            val loadedGraph = MallGraphRepository.load(context)
+            val loadedDetector = LogoDetector(context)
+            
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                allPlaces = loadedPlaces
+                mallGraph = loadedGraph
+                logoDetector = loadedDetector
+            }
+        }
+    }
 
     // ── State ─────────────────────────────────────────────────────────────────
     var flow           by remember { mutableStateOf(ScreenFlow.CAMERA_IDLE) }
@@ -102,9 +136,7 @@ fun LogoScanScreen(
 
     var searchQuery    by remember { mutableStateOf("") }
 
-    val logoDetector   = remember { LogoDetector(context) }
     val latestBitmap   = remember { AtomicReference<Bitmap?>(null) }
-    val scanRequested  = remember { AtomicBoolean(false) }
 
     // The brand detected by the ML model matched with a Place from places.json
     val detectedPlace = remember(detectedBrand) {
@@ -160,7 +192,7 @@ fun LogoScanScreen(
                                 latestBitmap.set(bmp)
                                 if (scanRequested.getAndSet(false)) {
                                     // ✅ Use the real ML model
-                                    val result = logoDetector.detect(bmp)
+                                    val result = logoDetector?.detect(bmp)
                                     android.os.Handler(android.os.Looper.getMainLooper()).post {
                                         if (result != null) {
                                             Log.d("LogoScan", "✅ Detected: ${result.brand} (${result.similarity})")
@@ -332,7 +364,7 @@ fun LogoScanScreen(
                             )
                         ) {
                             Text(
-                                if (detectedPlace != null) "Yes, I'm here — Pick Destination"
+                                if (detectedPlace != null) "Yes, I'm here"
                                 else "Not found — Scan Again",
                                 fontSize = 15.sp, fontWeight = FontWeight.ExtraBold, color = White
                             )
@@ -591,7 +623,7 @@ fun LogoScanScreen(
                                     val end   = destination
                                     if (start != null && end != null) {
                                         // Compute A* path
-                                        val path = MallGraphRepository.aStar(mallGraph, start.id, end.id)
+                                        val path = mallGraph?.let { MallGraphRepository.aStar(it, start.id, end.id) }
                                         NavigationState.selectedPlace     = end
                                         NavigationState.startPlace        = start
                                         NavigationState.estimatedDistance = destDistM
@@ -702,19 +734,21 @@ fun LogoScanScreen(
             }
         }
 
-        // Back button — only in CAMERA_IDLE
+        // Settings button — only in CAMERA_IDLE
         AnimatedVisibility(
             visible = flow == ScreenFlow.CAMERA_IDLE && scanState == ScanState.IDLE,
-            modifier = Modifier.align(Alignment.TopStart),
+            modifier = Modifier.align(Alignment.TopEnd),
             enter = fadeIn(), exit = fadeOut()
         ) {
-            Surface(
-                onClick = onBackClick,
-                modifier = Modifier.statusBarsPadding().padding(16.dp).size(48.dp),
-                shape = CircleShape, color = White.copy(alpha = 0.88f)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Teal)
+            Box(modifier = Modifier.statusBarsPadding().padding(16.dp)) {
+                Surface(
+                    onClick = onSettingsClick,
+                    modifier = Modifier.size(48.dp),
+                    shape = CircleShape, color = White.copy(alpha = 0.88f)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(Icons.Default.Settings, "Settings", tint = Teal)
+                    }
                 }
             }
         }

@@ -1,5 +1,8 @@
 package com.example.mallar
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -7,19 +10,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mallar.ui.screens.ArNavigationScreen
-import com.example.mallar.ui.screens.LogoScanScreen
-import com.example.mallar.ui.screens.NavigationState
-import com.example.mallar.ui.screens.OtpVerifyScreen
-import com.example.mallar.ui.screens.PermissionsScreen
-import com.example.mallar.ui.screens.PhoneAuthScreen
-import com.example.mallar.ui.screens.SplashScreen
-import com.example.mallar.ui.screens.StoreDetailScreen
-import com.example.mallar.ui.screens.StoreSearchScreen
+import com.example.mallar.ui.screens.*
 import com.example.mallar.ui.theme.MallARTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,7 +27,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MallARTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    MallARNavGraph()
+                    MallARNavGraph(applicationContext)
                 }
             }
         }
@@ -38,14 +36,17 @@ class MainActivity : ComponentActivity() {
 
 /**
  * Navigation graph for the entire MallAR app.
- *
- * Flow:
- *   Splash → Permissions → PhoneAuth → OtpVerify → LogoScan → StoreSearch → StoreDetail → ArNavigation
- *                                      ↘ (Skip) → LogoScan
  */
 @Composable
-fun MallARNavGraph() {
+fun MallARNavGraph(context: Context) {
     val navController = rememberNavController()
+    val prefs: SharedPreferences = remember { context.getSharedPreferences("mallar_prefs", Context.MODE_PRIVATE) }
+    val isFirstLaunch = remember { mutableStateOf(prefs.getBoolean("is_first_launch", true)) }
+
+    fun checkPermissionsGranted(): Boolean {
+        val cameraPermission = ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA)
+        return cameraPermission == PackageManager.PERMISSION_GRANTED
+    }
 
     NavHost(
         navController = navController,
@@ -53,16 +54,47 @@ fun MallARNavGraph() {
     ) {
         composable("splash") {
             SplashScreen(
+                isFirstLaunch = isFirstLaunch.value,
                 onStartClick = {
-                    navController.navigate("permissions")
+                    if (isFirstLaunch.value) {
+                        navController.navigate("welcome") {
+                            popUpTo("splash") { inclusive = true }
+                        }
+                    } else {
+                        // Returning user: check permissions
+                        if (checkPermissionsGranted()) {
+                            navController.navigate("logo_scan") {
+                                popUpTo("splash") { inclusive = true }
+                            }
+                        } else {
+                            navController.navigate("permissions") {
+                                popUpTo("splash") { inclusive = true }
+                            }
+                        }
+                    }
                 }
             )
         }
 
-        composable("permissions") {
-            PermissionsScreen(
-                onContinueClick = {
+        composable("welcome") {
+            WelcomeScreen(
+                onPhoneAuthClick = {
                     navController.navigate("phone_auth")
+                },
+                onSkipClick = {
+                    // User skipped: they are no longer in "first launch" mode
+                    isFirstLaunch.value = false
+                    prefs.edit().putBoolean("is_first_launch", false).apply()
+                    
+                    if (checkPermissionsGranted()) {
+                        navController.navigate("logo_scan") {
+                            popUpTo("welcome") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("permissions") {
+                            popUpTo("welcome") { inclusive = true }
+                        }
+                    }
                 }
             )
         }
@@ -74,7 +106,18 @@ fun MallARNavGraph() {
                     navController.navigate("otp_verify")
                 },
                 onSkipClick = {
-                    navController.navigate("logo_scan")
+                    isFirstLaunch.value = false
+                    prefs.edit().putBoolean("is_first_launch", false).apply()
+
+                    if (checkPermissionsGranted()) {
+                        navController.navigate("logo_scan") {
+                            popUpTo("phone_auth") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("permissions") {
+                            popUpTo("phone_auth") { inclusive = true }
+                        }
+                    }
                 }
             )
         }
@@ -83,16 +126,52 @@ fun MallARNavGraph() {
             OtpVerifyScreen(
                 onBackClick = { navController.popBackStack() },
                 onVerifyClick = {
-                    navController.navigate("logo_scan")
+                    isFirstLaunch.value = false
+                    prefs.edit().putBoolean("is_first_launch", false).apply()
+
+                    if (checkPermissionsGranted()) {
+                        navController.navigate("logo_scan") {
+                            popUpTo("welcome") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("permissions") {
+                            popUpTo("welcome") { inclusive = true }
+                        }
+                    }
+                }
+            )
+        }
+
+        composable("permissions") {
+            PermissionsScreen(
+                onContinueClick = {
+                    navController.navigate("logo_scan") {
+                        popUpTo("permissions") { inclusive = true }
+                    }
                 }
             )
         }
 
         composable("logo_scan") {
             LogoScanScreen(
-                onBackClick = { navController.popBackStack() },
+                onSettingsClick = {
+                    navController.navigate("settings")
+                },
                 onStoreSelected = {
                     navController.navigate("ar_navigation")
+                }
+            )
+        }
+
+        composable("settings") {
+            SettingsScreen(
+                onBackClick = { navController.popBackStack() },
+                onLogoutClick = {
+                    // Optional: Reset first launch on logout for testing, 
+                    // or just go back to welcome.
+                    navController.navigate("welcome") {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             )
         }
@@ -118,7 +197,6 @@ fun MallARNavGraph() {
                     }
                 )
             } else {
-                // Fallback if no place selected — go back to search
                 navController.popBackStack()
             }
         }
