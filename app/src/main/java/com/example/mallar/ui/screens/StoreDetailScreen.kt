@@ -10,6 +10,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Navigation
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.ViewInAr
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.mallar.data.Place
+import com.example.mallar.data.MallGraphRepository
 import com.example.mallar.ui.theme.*
 
 // NavigationState is defined in LogoScanScreen.kt
@@ -34,8 +37,9 @@ import com.example.mallar.ui.theme.*
 fun StoreDetailScreen(
     place: Place,
     onBackClick: () -> Unit,
-    onStartNavigation: () -> Unit
+    onStartNavigation: (Boolean) -> Unit
 ) {
+    val context = LocalContext.current
     // Compute distance synchronously so it's ready on first frame
     val distM = remember(place) {
         val dx = place.x - 319f
@@ -95,6 +99,7 @@ fun StoreDetailScreen(
             }
 
             Surface(
+                onClick = onBackClick,
                 modifier = Modifier.size(48.dp),
                 shape = CircleShape,
                 color = White.copy(alpha = 0.15f)
@@ -178,35 +183,63 @@ fun StoreDetailScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // START button (matches mockup)
-            Button(
-                onClick = onStartNavigation,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp)
-                    .shadow(16.dp, RoundedCornerShape(30.dp)),
-                shape = RoundedCornerShape(30.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Teal)
-            ) {
-                Icon(
-                    Icons.Filled.Navigation,
-                    contentDescription = null,
-                    tint = White,
-                    modifier = Modifier.size(22.dp)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    text = "Start",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = White
-                )
+            // Navigation Buttons
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = { 
+                        // We need to run A* if we have a start place
+                        val start = NavigationState.startPlace
+                        if (start != null) {
+                            val mallGraph = MallGraphRepository.load(context)
+                            val path = MallGraphRepository.aStar(mallGraph, start.id, place.id)
+                            NavigationState.aStarPath = path
+                            if (path != null) {
+                                NavigationState.estimatedDistance = (path.totalDistancePx * 0.25).toInt()
+                                NavigationState.estimatedMinutes = (NavigationState.estimatedDistance / 72).coerceIn(1, 20)
+                            }
+                        }
+                        onStartNavigation(true) 
+                    },
+                    modifier = Modifier.weight(1f).height(60.dp).shadow(16.dp, RoundedCornerShape(30.dp)),
+                    shape = RoundedCornerShape(30.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Teal)
+                ) {
+                    Icon(Icons.Filled.ViewInAr, null, tint = White, modifier = Modifier.size(20.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("AR", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, color = White)
+                }
+                
+                Spacer(modifier = Modifier.width(16.dp))
+                
+                Button(
+                    onClick = { 
+                        // We need to run A* if we have a start place
+                        val start = NavigationState.startPlace
+                        if (start != null) {
+                            val mallGraph = MallGraphRepository.load(context)
+                            val path = MallGraphRepository.aStar(mallGraph, start.id, place.id)
+                            NavigationState.aStarPath = path
+                            if (path != null) {
+                                NavigationState.estimatedDistance = (path.totalDistancePx * 0.25).toInt()
+                                NavigationState.estimatedMinutes = (NavigationState.estimatedDistance / 72).coerceIn(1, 20)
+                            }
+                        }
+                        onStartNavigation(false) 
+                    },
+                    modifier = Modifier.weight(1f).height(60.dp).shadow(16.dp, RoundedCornerShape(30.dp)),
+                    shape = RoundedCornerShape(30.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
+                ) {
+                    Icon(Icons.Filled.Map, null, tint = White, modifier = Modifier.size(20.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Map", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, color = White)
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Begin navigation to ${place.brand}",
+                text = "Choose your navigation mode to ${place.brand}",
                 color = White.copy(alpha = 0.5f),
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center

@@ -33,6 +33,8 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.ViewInAr
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -88,7 +90,7 @@ enum class ScreenFlow {
 @Composable
 fun LogoScanScreen(
     onSettingsClick: () -> Unit,
-    onStoreSelected: () -> Unit   // navigate to ArNavigation
+    onStoreSelected: (Boolean) -> Unit   // navigate to ArNavigation (true) or StaticMap (false)
 ) {
     val context        = LocalContext.current
     var backPressedTime by remember { mutableLongStateOf(0L) }
@@ -116,7 +118,7 @@ fun LogoScanScreen(
             val loadedPlaces = PlaceRepository.load(context)
             val loadedGraph = MallGraphRepository.load(context)
             val loadedDetector = LogoDetector(context)
-            
+
             kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
                 allPlaces = loadedPlaces
                 mallGraph = loadedGraph
@@ -616,39 +618,40 @@ fun LogoScanScreen(
 
                             Spacer(modifier = Modifier.height(18.dp))
 
-                            // START button — runs A* and navigates
-                            Button(
-                                onClick = {
-                                    val start = startPlace
-                                    val end   = destination
-                                    if (start != null && end != null) {
-                                        // Compute A* path
-                                        val path = mallGraph?.let { MallGraphRepository.aStar(it, start.id, end.id) }
-                                        NavigationState.selectedPlace     = end
-                                        NavigationState.startPlace        = start
-                                        NavigationState.estimatedDistance = destDistM
-                                        NavigationState.estimatedMinutes  = destMins
-                                        NavigationState.aStarPath         = path
-                                        onStoreSelected()
-                                    } else if (end != null) {
-                                        // No scanned start — navigate with approx path
-                                        NavigationState.selectedPlace     = end
-                                        NavigationState.estimatedDistance = destDistM
-                                        NavigationState.estimatedMinutes  = destMins
-                                        NavigationState.aStarPath         = null
-                                        onStoreSelected()
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth().height(54.dp),
-                                shape = RoundedCornerShape(27.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Teal)
-                            ) {
-                                Text("Start", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, color = White)
+                            // Action Buttons: AR and Static Map
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                Button(
+                                    onClick = {
+                                        startNavigation(mallGraph, startPlace, destination, destDistM, onStoreSelected, true)
+                                    },
+                                    modifier = Modifier.weight(1f).height(54.dp),
+                                    shape = RoundedCornerShape(27.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Teal)
+                                ) {
+                                    Icon(Icons.Filled.ViewInAr, null, tint = White, modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("AR", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = White)
+                                }
+                                
+                                Spacer(modifier = Modifier.width(12.dp))
+                                
+                                Button(
+                                    onClick = {
+                                        startNavigation(mallGraph, startPlace, destination, destDistM, onStoreSelected, false)
+                                    },
+                                    modifier = Modifier.weight(1f).height(54.dp),
+                                    shape = RoundedCornerShape(27.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
+                                ) {
+                                    Icon(Icons.Filled.Map, null, tint = White, modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Map", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = White)
+                                }
                             }
 
                             Spacer(modifier = Modifier.height(10.dp))
                             Text(
-                                "Begin navigation to ${dest.brand}",
+                                "Choose your navigation mode",
                                 color = TextSecondary, fontSize = 13.sp, textAlign = TextAlign.Center,
                                 modifier = Modifier.fillMaxWidth()
                             )
@@ -752,6 +755,43 @@ fun LogoScanScreen(
                 }
             }
         }
+    }
+}
+
+private fun startNavigation(
+    mallGraph: com.example.mallar.data.MallGraph?,
+    startPlace: Place?,
+    destination: Place?,
+    destDistM: Int,
+    onStoreSelected: (Boolean) -> Unit,
+    useAr: Boolean
+) {
+    val start = startPlace
+    val end   = destination
+    if (start != null && end != null) {
+        // ── Run A* to get the optimal path ──────────────
+        val path = mallGraph?.let {
+            MallGraphRepository.aStar(it, start.id, end.id)
+        }
+        // Use A* path distance for accurate estimates
+        val realDistM = if (path != null)
+            (path.totalDistancePx * 0.25).toInt().coerceIn(10, 1500)
+        else destDistM
+        val realMins = (realDistM / 72).coerceIn(1, 20) // 72m/min walking pace
+
+        NavigationState.selectedPlace     = end
+        NavigationState.startPlace        = start
+        NavigationState.estimatedDistance = realDistM
+        NavigationState.estimatedMinutes  = realMins
+        NavigationState.aStarPath         = path
+        onStoreSelected(useAr)
+    } else if (end != null) {
+        // No scanned start — navigate without start node
+        NavigationState.selectedPlace     = end
+        NavigationState.estimatedDistance = destDistM
+        NavigationState.estimatedMinutes  = (destDistM / 72).coerceIn(1, 20)
+        NavigationState.aStarPath         = null
+        onStoreSelected(useAr)
     }
 }
 

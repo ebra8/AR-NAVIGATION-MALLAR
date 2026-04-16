@@ -157,8 +157,12 @@ fun MallARNavGraph(context: Context) {
                 onSettingsClick = {
                     navController.navigate("settings")
                 },
-                onStoreSelected = {
-                    navController.navigate("ar_navigation")
+                onStoreSelected = { useAr ->
+                    if (useAr) {
+                        navController.navigate("ar_navigation")
+                    } else {
+                        navController.navigate("static_map")
+                    }
                 }
             )
         }
@@ -192,8 +196,12 @@ fun MallARNavGraph(context: Context) {
                 StoreDetailScreen(
                     place = place,
                     onBackClick = { navController.popBackStack() },
-                    onStartNavigation = {
-                        navController.navigate("ar_navigation")
+                    onStartNavigation = { useAr ->
+                        if (useAr) {
+                            navController.navigate("ar_navigation")
+                        } else {
+                            navController.navigate("static_map")
+                        }
                     }
                 )
             } else {
@@ -203,6 +211,12 @@ fun MallARNavGraph(context: Context) {
 
         composable("ar_navigation") {
             ArNavigationScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable("static_map") {
+            StaticMapScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }
