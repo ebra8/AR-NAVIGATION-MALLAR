@@ -89,10 +89,23 @@ class ArCoordinateTransformer(
      *  180°  = +Z axis (back)
      *  −90°  = −X axis (left)
      */
+    /**
+     * حساب زاوية الدوران حول محور Y بحيث يواجه السهم النقطة التالية.
+     */
+    /**
+     * حساب زاوية الدوران حول محور Y بحيث يواجه السهم النقطة التالية.
+     */
     fun yRotationDeg(from: ArPosition, to: ArPosition): Float {
         val dx = to.x - from.x
         val dz = to.z - from.z
-        return Math.toDegrees(atan2(dx.toDouble(), -dz.toDouble())).toFloat()
+
+        // atan2(dx, -dz) تعطي الزاوية حيث 0 هو اتجاه الأمام (-Z)
+        val angle = Math.toDegrees(atan2(dx.toDouble(), -dz.toDouble())).toFloat()
+
+        // بما أن الاتجاه حالياً عكسي (180 درجة خطأ)، سنضيف 180 لتعديله
+        val modelOffset = 180f
+
+        return (angle + modelOffset + 360f) % 360f
     }
 
     // ── Arrow interpolation ───────────────────────────────────────────────────

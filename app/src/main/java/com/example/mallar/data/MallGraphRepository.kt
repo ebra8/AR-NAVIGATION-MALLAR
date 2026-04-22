@@ -48,12 +48,14 @@ enum class AStarDirection { STRAIGHT, LEFT, RIGHT, ARRIVED }
 object MallGraphRepository {
 
     private var graph: MallGraph? = null
+    var loadedGraph: MallGraph? = null  // public read-only access without context
 
     fun load(context: Context): MallGraph {
         graph?.let { return it }
         val json = context.assets.open("mall_graph.json").bufferedReader().use { it.readText() }
         val loaded = Gson().fromJson(json, MallGraph::class.java)
         graph = loaded
+        loadedGraph = loaded
         return loaded
     }
 
